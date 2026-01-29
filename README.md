@@ -1,9 +1,8 @@
-# qwen
 diff --git a/README.md b/README.md
-index 1549943df78c38a144c7acdc3f51134e3bb66d4f..b1cd08ba55e040400e57d0265324ee13462d844f 100644
+index 1549943df78c38a144c7acdc3f51134e3bb66d4f..b94d98d2f2e7f07bc0d24291671051ed1ea9693d 100644
 --- a/README.md
 +++ b/README.md
-@@ -1 +1,17 @@
+@@ -1 +1,25 @@
 -# qwen
 \ No newline at end of file
 +# qwen
@@ -20,6 +19,14 @@ index 1549943df78c38a144c7acdc3f51134e3bb66d4f..b1cd08ba55e040400e57d0265324ee13
 +  --val-csv val2014.csv \
 +  --max-samples 200 \
 +  --output eval_metrics.json
++```
++
++如遇到 `FileNotFoundError: Module 'sacrebleu' doesn't exist` 的报错，说明评测指标依赖未安装，
++请先安装评测依赖：
++
++```bash
++pip install evaluate sacrebleu rouge-score nltk
++python -m nltk.downloader wordnet
 +```
 +
 +输出包含基模型与微调模型的指标对比，用于查看微调带来的性能提升。
