@@ -122,8 +122,8 @@ model.enable_input_require_grads()  # 开启梯度检查点时，要执行该方
 train_json_path = "data_vl.json"
 with open(train_json_path, 'r') as f:
     data = json.load(f)
-    train_data = data[:-50]
-    test_data = data[-50:]
+    train_data = data[:-10]
+    test_data = data[-10:]
 
 with open("data_vl_train.json", "w") as f:
     json.dump(train_data, f)
@@ -155,7 +155,7 @@ args = TrainingArguments(
     gradient_accumulation_steps=4,
     logging_steps=10,
     logging_first_step=5,
-    num_train_epochs=3,
+    num_train_epochs=2,
     save_steps=100,
     learning_rate=1e-4,
     save_on_each_node=True,
