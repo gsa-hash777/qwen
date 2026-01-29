@@ -98,16 +98,29 @@ def load_eval_examples(val_csv: str, max_samples: int, seed: int) -> List[EvalEx
     return examples
 
 
+def safe_load_metric(name: str):
+    try:
+        return evaluate.load(name)
+    except (FileNotFoundError, ModuleNotFoundError, ValueError):
+        return None
+
+
 def build_metrics():
     metrics = {
-        "sacrebleu": evaluate.load("sacrebleu"),
-        "rouge": evaluate.load("rouge"),
-        "meteor": evaluate.load("meteor"),
+        "sacrebleu": safe_load_metric("sacrebleu"),
+        "rouge": safe_load_metric("rouge"),
+        "meteor": safe_load_metric("meteor"),
+        "cider": safe_load_metric("cider"),
     }
-    try:
-        metrics["cider"] = evaluate.load("cider")
-    except FileNotFoundError:
-        metrics["cider"] = None
+    missing = [key for key, value in metrics.items() if value is None]
+    if missing:
+        print(
+            "[warn] Metrics not available: "
+            + ", ".join(missing)
+            + ". Install with: pip install evaluate sacrebleu rouge-score nltk"
+        )
+        if "meteor" in missing:
+            print("[warn] METEOR needs NLTK data: python -m nltk.downloader wordnet")
     return metrics
 
 
@@ -162,13 +175,15 @@ def evaluate_model(
         predictions.append(prediction)
         references.append(example.references)
 
-    results = {
-        "sacrebleu": metrics["sacrebleu"].compute(predictions=predictions, references=references),
-        "rouge": metrics["rouge"].compute(predictions=predictions, references=references),
-        "meteor": metrics["meteor"].compute(predictions=predictions, references=references),
-        "num_samples": len(predictions),
-    }
-
+    results = {"num_samples": len(predictions)}
+    if metrics["sacrebleu"]:
+        results["sacrebleu"] = metrics["sacrebleu"].compute(
+            predictions=predictions, references=references
+        )
+    if metrics["rouge"]:
+        results["rouge"] = metrics["rouge"].compute(predictions=predictions, references=references)
+    if metrics["meteor"]:
+        results["meteor"] = metrics["meteor"].compute(predictions=predictions, references=references)
     if metrics["cider"]:
         results["cider"] = metrics["cider"].compute(predictions=predictions, references=references)
 
