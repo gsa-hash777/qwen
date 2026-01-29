@@ -4,7 +4,7 @@ import requests
 from PIL import Image
 import time
 
-MAX_DATA_NUMBER = 5000
+MAX_DATA_NUMBER = 500
 
 # 检查目录是否已存在
 if not os.path.exists('coco_2014_caption'):
